@@ -26,6 +26,9 @@ typedef struct{
 }L_Token;
 
 L_Token tokens[LT_MAX];
+L_Token* Cache;
+int CacheLen=0;
+int CacheMax=8;
 int ch;
 int lch=0;
 uint64_t LineNo=0;

@@ -152,6 +152,7 @@ void initialize(){
     tokens[temp_i].token="'";
     tokens[temp_i++].id=L_STR;
     RES.token=(char*)malloc(sizeof(char)*255);
+    Cache=(L_Token*)malloc(sizeof(L_Token)*CacheMax);
 }
 
 int save(L_Token ls){
@@ -183,6 +184,12 @@ L_Token Gen(char* buf, int id, uint64_t From, uint64_t To, uint64_t Line){
     RES.From=From;
     RES.To=To;
     RES.Line=Line;
+    if(CacheLen<CacheMax)
+      Cache[CacheLen++]=RES;
+    else{
+        Cache=realloc(Cache, (CacheMax=CacheMax+8)*sizeof(L_Token));
+        Cache[CacheLen++]=RES;
+    }
     return RES;
 }
 
@@ -637,7 +644,12 @@ void FreeMem(){
         free(Tokens[i].token);
     }
     free(Tokens);
-    free(RES.token);
+    free(Cache);
+    CacheLen=0;
+    CacheMax=8;
+    LineNo=0;
+    TokenNum=0;
+    nowmaxmem=TK_DEFAULT;
 }
 
 #define TESTMODE
