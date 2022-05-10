@@ -206,6 +206,10 @@ L_Token* getToken(char* ls){
     char* tip={0};
     char* str={0};
     int chr=0;
+    int Str_char=-1;
+    char* STR_BUF;
+    int STR_BUF_len=0;
+    int STR_BUF_MemMax=255;
     while((ch=*(ls++))!='\0'){
         ls_index++;
         if(ch==' '||ch=='\t') continue;
@@ -506,9 +510,247 @@ L_Token* getToken(char* ls){
                 free(str);
                 break;
               case '"': case '\'':
-                str=toStr(ch);
+                /*str=toStr(ch);
                 save(Gen(str, IsKey(str), tokenStart, ls_index, LineNo));
-                free(str);
+                free(str);*/
+                Str_char=ch;
+                STR_BUF=(char*)malloc(STR_BUF_MemMax);
+                while(1){
+                    ch=*ls++;
+                    ls_index++;
+                    if(ch=='\0'){
+                        content=getLine(DefLS, LineNo);
+                        tip=GenPosTip(ls_index-3, ls_index-2);
+                        fprintf(stderr,"Limer found an \033[91;1merror\033[0m:\n");
+                        fprintf(stderr,"    %s\n",content);
+                        fprintf(stderr,"    %s\n",tip);
+                        fprintf(stderr,"Limer:LexicalAnalyzer-StringProcessor-BadSyntax:l%lu:c%lu: Invalid symbol in string!\n",LineNo+1,ls_index-1);
+                        free(content);
+                        free(tip);
+                        free(buf);
+                        free(STR_BUF);
+                        return NULL;
+                    }
+                    switch(ch){
+                      case '\\':
+                        ch=*ls++;
+                        ls_index++;
+                        if(ch=='\0'){
+                            content=getLine(DefLS, LineNo);
+                            tip=GenPosTip(ls_index-2, ls_index-1);
+                            fprintf(stderr,"Limer found an \033[91;1merror\033[0m:\n");
+                            fprintf(stderr,"    %s\n",content);
+                            fprintf(stderr,"    %s\n",tip);
+                            fprintf(stderr,"Limer:LexicalAnalyzer:l%lu:c%lu: No symbol near `\\'!\n",LineNo+1,ls_index);
+                            free(content);
+                            free(tip);
+                            free(buf);
+                            return NULL;
+                        }
+                        switch(ch){
+                          case '\\':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\\';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\\';
+                            }
+                            break;
+                          case '\'':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\'';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\'';
+                            }
+                            break;
+                          case '"':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='"';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='"';
+                            }
+                            break;
+                          case 't':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\t';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\t';
+                            }
+                            break;
+                          case 'n':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\n';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\n';
+                            }
+                            break;
+                          case 'r':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\r';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\r';
+                            }
+                            break;
+                          case 'e':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\033';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\033';
+                            }
+                            break;
+                          case '\n':
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\\';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\\';
+                            }
+                            break;
+                          case '0': case '1': case '2':\
+                          case '3': case '4': case '5':\
+                          case '6': case '7': case '8': case '9':
+                            chr=toInt(ch);
+                            ch=*(ls++);
+                            if(ch=='\0'||ch=='\n'){
+                                ls_index--;
+                                if(ch=='\0'){
+                                    content=getLine(DefLS, LineNo);
+                                    tip=GenPosTip(ls_index-2, ls_index-1);
+                                    fprintf(stderr,"Limer found an \033[91;1merror\033[0m:\n");
+                                    fprintf(stderr,"    %s\n",content);
+                                    fprintf(stderr,"    %s\n",tip);
+                                    fprintf(stderr,"Limer:LexicalAnalyzer-StringProcessor-BadSyntax:l%lu:c%lu: Invalid symbol in string!\n",LineNo+1,ls_index);
+                                    free(content);
+                                    free(tip);
+                                    free(buf);
+                                    free(STR_BUF);
+                                    return NULL;
+                                }
+                                if(ch=='\n'){
+                                    if(STR_BUF_len<STR_BUF_MemMax)
+                                      STR_BUF[STR_BUF_len++]=chr;
+                                    else{
+                                        STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                        STR_BUF[STR_BUF_len++]=chr;
+                                    }
+                                    LineNo++;
+                                    ls_index=0;
+                                }
+                                break;
+                            }
+                            switch(ch){
+                              case '0': case '1': case '2':\
+                              case '3': case '4': case '5':\
+                              case '6': case '7': case '8': case '9':
+                                chr=toInt(ch)+chr*10;
+                                ch=*(ls++);
+                                ls_index++;
+                                if(ch=='\0'||ch=='\n'){
+                                    ls_index--;
+                                    if(ch=='\0'){
+                                        content=getLine(DefLS, LineNo);
+                                        tip=GenPosTip(ls_index-2, ls_index-1);
+                                        fprintf(stderr,"Limer found an \033[91;1merror\033[0m:\n");
+                                        fprintf(stderr,"    %s\n",content);
+                                        fprintf(stderr,"    %s\n",tip);
+                                        fprintf(stderr,"Limer:LexicalAnalyzer-StringProcessor-BadSyntax:l%lu:c%lu: Invalid symbol in string!\n",LineNo+1,ls_index);
+                                        free(content);
+                                        free(tip);
+                                        free(buf);
+                                        free(STR_BUF);
+                                        return NULL;
+                                    }
+                                    if(ch=='\n'){
+                                        if(STR_BUF_len<STR_BUF_MemMax)
+                                          STR_BUF[STR_BUF_len++]=chr;
+                                        else{
+                                            STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                            STR_BUF[STR_BUF_len++]=chr;
+                                        }
+                                        LineNo++;
+                                        ls_index=0;
+                                    }
+                                    break;
+                                }
+                                switch(ch){
+                                  case '0': case '1': case '2':\
+                                  case '3': case '4': case '5':\
+                                  case '6': case '7': case '8': case '9':
+                                    chr=toInt(ch)+chr*10;
+                                    if(STR_BUF_len<STR_BUF_MemMax)
+                                      STR_BUF[STR_BUF_len++]=chr;
+                                    else{
+                                        STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                        STR_BUF[STR_BUF_len++]=chr;
+                                    }
+                                    break;
+                                  default:
+                                    if(STR_BUF_len<STR_BUF_MemMax)
+                                      STR_BUF[STR_BUF_len++]=chr;
+                                    else{
+                                        STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                        STR_BUF[STR_BUF_len++]=chr;
+                                    }
+                                    ls_index--;
+                                    ls--;
+                                    break;
+                                }
+                                break;
+                              default:
+                                if(STR_BUF_len<STR_BUF_MemMax)
+                                  STR_BUF[STR_BUF_len++]=chr;
+                                else{
+                                    STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                    STR_BUF[STR_BUF_len++]=chr;
+                                }
+                                ls_index--;
+                                ls--;
+                                break;
+                            }
+                            break;
+                          default:
+                            if(STR_BUF_len<STR_BUF_MemMax)
+                              STR_BUF[STR_BUF_len++]='\\';
+                            else{
+                                STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                                STR_BUF[STR_BUF_len++]='\\';
+                            }
+                            ls_index--;
+                            ls--;
+                            break;
+                        }
+                        break;
+                      case '\'': case '"':
+                        if(ch==Str_char)
+                          goto breakStr;
+                        if(STR_BUF_len<STR_BUF_MemMax)
+                          STR_BUF[STR_BUF_len++]=ch;
+                        else{
+                            STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                            STR_BUF[STR_BUF_len++]=ch;
+                        }
+                        break;
+                      default:
+                        if(STR_BUF_len<STR_BUF_MemMax)
+                          STR_BUF[STR_BUF_len++]=ch;
+                        else{
+                            STR_BUF=(char*)realloc(STR_BUF, (STR_BUF_MemMax=STR_BUF_MemMax+255));
+                            STR_BUF[STR_BUF_len++]=ch;
+                        }
+                        break;
+                    }
+                }
+breakStr:
+                save(Gen(STR_BUF, L_STR, tokenStart, ls_index, LineNo));
+                free(STR_BUF);
+                STR_BUF_len=0;
+                STR_BUF_MemMax=255;
                 break;
               case '\\':
                 ch=*(ls++);
@@ -546,6 +788,7 @@ L_Token* getToken(char* ls){
                   case '6': case '7': case '8': case '9':
                     chr=toInt(ch);
                     ch=*(ls++);
+                    ls_index++;
                     if(ch=='\0'||ch=='\n'){
                         save(Gen(toStr(chr), IsKey("\\"), tokenStart, --ls_index, LineNo));
                         if(ch=='\n'){
@@ -560,6 +803,7 @@ L_Token* getToken(char* ls){
                       case '6': case '7': case '8': case '9':
                         chr=toInt(ch)+chr*10;
                         ch=*(ls++);
+                        ls_index++;
                         if(ch=='\0'||ch=='\n'){
                             save(Gen(toStr(chr), IsKey("\\"), tokenStart, --ls_index, LineNo));
                             if(ch=='\n'){
