@@ -1,3 +1,7 @@
+/*
+ * LMFS Limer Program Language - Information - Header File
+ */
+
 #ifndef LINFO_H
 #define LINFO_H
 

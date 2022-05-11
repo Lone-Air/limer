@@ -1,5 +1,5 @@
 /*
- * LMFS Limer Program Language
+ * LMFS Limer Program Language - Interpreter
  */
 
 #include <stdio.h>

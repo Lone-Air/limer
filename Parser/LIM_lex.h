@@ -1,5 +1,5 @@
 /*
- * LMFS Limer Programming language
+ * LMFS Limer Program language - Scanner - Header File
  */
 
 #ifndef LIMLEX_H

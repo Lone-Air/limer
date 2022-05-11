@@ -1,5 +1,5 @@
 /*
- * LMFS Limer Programming language
+ * LMFS Limer Program language - Scanner - Source Code
  */
 
 #include "limer.h"
