@@ -6,7 +6,7 @@
 #include "LIM_lex.h"
 
 static char* const keys[LT_MAX]={
-    "Integer", "String", "List", "Bool", "Float", "NoType", 
+    "Integer", "String", "List", "Bool", "Float", "NoType", "Structure", "Constant", 
     "for", "while", "if", "else", "switch", "case", "default", "include",
     "new", "try", "catch", "nothing", "null", "throw", "+", "-", "*", "/", "&", "|", "%", ";", "(", ")", "{",
     "}", "[", "]" , ">", "<", ">=", "<=", "!=", "==", "&&", "||", ">>", "<<",
