@@ -5,6 +5,18 @@
 #include "limer.h"
 #include "LIM_lex.h"
 
+L_Token tokens[LT_MAX];
+L_Token* Cache;
+int CacheLen=0;
+int CacheMax=8;
+int ch;
+int lch=0;
+uint64_t LineNo=0;
+uint64_t nowmaxmem=TK_DEFAULT;
+L_Token *Tokens;
+uint64_t TokenNum=0;
+L_Token RES;
+
 static char* const keys[LT_MAX]={
     "Integer", "String", "List", "Bool", "Float", "NoType", "Structure", "Constant", 
     "for", "while", "if", "else", "switch", "case", "default", "include",
@@ -896,9 +908,11 @@ void FreeMem(){
     nowmaxmem=TK_DEFAULT;
 }
 
-#define TESTMODE
+int getLen(){
+    return TokenNum;
+}
 
-#ifdef TESTMODE
+#ifdef TESTMODE1
 int main(){
 //#include <readline/readline.h>
     initialize();

@@ -4,3 +4,4 @@ exec_*
 *.a
 *.lo
 *.la
+*.bak

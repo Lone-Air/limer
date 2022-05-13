@@ -17,6 +17,8 @@
 #define TK_DEFAULT 1
 #define TK_MALLOC 1
 
+#define TESTMODE2
+
 typedef struct{
     char *token;
     int id;
@@ -25,20 +27,13 @@ typedef struct{
     uint64_t Line;
 }L_Token;
 
-L_Token tokens[LT_MAX];
-L_Token* Cache;
-int CacheLen=0;
-int CacheMax=8;
-int ch;
-int lch=0;
-uint64_t LineNo=0;
-uint64_t nowmaxmem=TK_DEFAULT;
-L_Token *Tokens;
-uint64_t TokenNum=0;
-L_Token RES;
+typedef struct{
+    L_Token* Tokens;
+    uint64_t len;
+}TokenList;
 
 enum LIM_LEX{
-    L_INT=1, L_STRT, L_LIST, L_BOOL, L_FLT, L_NTPE, L_STRUCT, L_CONST,
+    L_INT=0, L_STRT, L_LIST, L_BOOL, L_FLT, L_NTPE, L_STRUCT, L_CONST,
     L_FOR, L_WHL, L_IF, L_ELS, L_SWI, L_CAS, L_DFT, L_INC, L_NEW, L_TRY, L_CAT, L_NTG, L_NULL, L_THRW, L_PLUS,
     L_MINU, L_TMS, L_DEVI, L_POS, L_ORT, L_FTR, L_SP, L_PSS, L_PSE, L_PMS, L_PME, L_PBS, L_PBE, L_MR, L_LR, L_MRE,
     L_LRE, L_NE, L_EQ, L_AND, L_OR, L_RMP, L_LMP, L_ADD, L_RM, L_TM, L_DV, L_PE, L_OE, L_RPS, L_LPS,
@@ -62,5 +57,7 @@ char* GenPosTip(uint64_t From, uint64_t To);
 L_Token Gen(char* buf, int id, uint64_t From, uint64_t To, uint64_t Line);
 char* toStr(char c);
 int toInt(char c);
+int getLen();
+
 #endif
 
