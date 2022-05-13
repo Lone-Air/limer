@@ -16,6 +16,8 @@ struct L_AST{
 
 typedef struct L_AST L_AST;
 
+void InitParser();
+void CleanTrash();
 TokenList NumCompleter(L_Token*, uint64_t);
 
 #endif

@@ -4,14 +4,48 @@
 
 #include "LIM_parser.h"
 
+L_Token temp;
+L_Token* Trash;
+uint64_t TrashCount=0;
+
 #define ID(x) id=x[count].id
 #define TK(x) x[count].token
 #define OPT(x) x[count]
-#define SAVE(V, a, b, c, d, e) if(nowmem<maxmem) V[nowmem++]=Gen(a, b, c, d, e); \
+#define SAVE(V, a, b, c, d, e) if(nowmem<maxmem){\
+                                temp=Gen(a, b, c, d, e);\
+                                V[nowmem].token=(char*)malloc(sizeof(char)*strlen(temp.token)+1);\
+                                strcpy(V[nowmem].token, temp.token);\
+                                V[nowmem].id=temp.id;\
+                                V[nowmem].From=temp.From;\
+                                V[nowmem].To=temp.To;\
+                                V[nowmem].Line=temp.Line;\
+                                Trash=(L_Token*)realloc(Trash, sizeof(L_Token)*(TrashCount+1));\
+                                Trash[TrashCount++]=V[nowmem++];\
+                            }\
                             else {\
                                 V=(L_Token*)realloc(new, sizeof(L_Token)*(maxmem=maxmem+TK_DEFAULT)); \
-                                V[nowmem++]=Gen(a, b, c, d, e);\
+                                temp=Gen(a, b, c, d, e);\
+                                V[nowmem].token=(char*)malloc(sizeof(char)*strlen(temp.token)+1);\
+                                strcpy(V[nowmem].token, temp.token);\
+                                V[nowmem].id=temp.id;\
+                                V[nowmem].From=temp.From;\
+                                V[nowmem].To=temp.To;\
+                                V[nowmem].Line=temp.Line;\
+                                Trash=(L_Token*)realloc(Trash, sizeof(L_Token)*(TrashCount+1));\
+                                Trash[TrashCount++]=V[nowmem++];\
                             }
+
+void InitParser(){
+    Trash=(L_Token*)malloc(sizeof(L_Token)*1);
+    TrashCount=0;
+}
+
+void CleanTrash(){
+    for(int i=0;i<TrashCount;i++){
+        free(Trash[i].token);
+    }
+    free(Trash);
+}
 
 TokenList NumCompleter(L_Token* old, uint64_t len){
     L_Token* new=(L_Token*)malloc(sizeof(L_Token)*TK_DEFAULT);
@@ -68,51 +102,9 @@ TokenList NumCompleter(L_Token* old, uint64_t len){
                 break;
             }
             break;
-          case L_MINU:
-            count++;
-            if(count<len){
-                count--;
-                SAVE(new, TK(old), L_NORN, OPT(old).From, OPT(old).To, OPT(old).Line);
-            }
-            ID(old);
-            switch(id){
-              case L_NORN:
-                str_tmp=(char*)malloc(sizeof(char)*(strlen(TK(old))+strlen(old[count-1].token)+1));
-                strcpy(str_tmp, old[count-1].token);
-                strcat(str_tmp, TK(old));
-                SAVE(new, str_tmp, L_NORN, old[count-1].From, OPT(old).To, OPT(old).Line);
-                free(str_tmp);
-                break;
-              default:
-                count--;
-                SAVE(new, TK(old), L_MINU, OPT(old).From, OPT(old).To, OPT(old).Line);
-                break;
-            }
-            break;
-          case L_PLUS:
-            count++;
-            if(count<len){
-                count--;
-                SAVE(new, TK(old), L_NORN, OPT(old).From, OPT(old).To, OPT(old).Line);
-            }
-            ID(old);
-            switch(id){
-              case L_NORN:
-                str_tmp=(char*)malloc(sizeof(char)*(strlen(TK(old))+strlen(old[count-1].token)+1));
-                strcpy(str_tmp, old[count-1].token);
-                strcat(str_tmp, TK(old));
-                SAVE(new, str_tmp, L_NORN, old[count-1].From, OPT(old).To, OPT(old).Line);
-                free(str_tmp);
-                break;
-              default:
-                count--;
-                SAVE(new, TK(old), L_PLUS, OPT(old).From, OPT(old).To, OPT(old).Line);
-                break;
-            }
-            break;
           case L_PINT:
             count++;
-            if(count<len){
+            if(count>=len){
                 count--;
                 SAVE(new, TK(old), L_NORN, OPT(old).From, OPT(old).To, OPT(old).Line);
             }
@@ -160,6 +152,7 @@ TokenList NumCompleter(L_Token* old, uint64_t len){
 int main(){
 //#include <readline/readline.h>
     initialize();
+    InitParser();
 /*    char* string=readline("LimerLex> ");
     if(string==NULL) return 0;*/
     char string[114514];
@@ -173,6 +166,7 @@ int main(){
         }
     }
     FreeMem();
+    CleanTrash();
     return 0;
 }
 #endif
