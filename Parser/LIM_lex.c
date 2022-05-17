@@ -225,7 +225,11 @@ L_Token* getToken(char* ls){
     while((ch=*(ls++))!='\0'){
         ls_index++;
         if(ch==' '||ch=='\t') continue;
-        else if(ch=='\n'){LineNo++;ls_index=0;}
+        else if(ch=='\n'){
+nextline:
+            LineNo++;
+            ls_index=0;
+        }
         else if(IsLet(ch)||IsNum(ch)||ch=='_'||ch>128){
             tokenStart=ls_index-1;
             while(IsLet(ch)||IsNum(ch)||ch=='_'||ch>128){
@@ -850,7 +854,11 @@ breakStr:
                 }
                 break;
               case '#':
-                save(Gen("#", IsKey("#"), tokenStart, ls_index, LineNo));
+                //save(Gen("#", IsKey("#"), tokenStart, ls_index, LineNo));
+                while((ch=*ls++)!='\0'){
+                    if(ch=='\n') goto nextline;
+                    ls_index++;
+                }
                 break;
               case '=':
                 ch=*(ls++);
