@@ -102,7 +102,7 @@ char* getLine(char* str, uint64_t lineno){
     int CH;
     uint64_t nowline=0;
     while((CH=*(str++))!='\0'){
-        if(CH=='\n'){
+        if(ch=='\n'||ch==13){
             nowline++;
             continue;
         }
@@ -225,8 +225,7 @@ L_Token* getToken(char* ls){
     while((ch=*(ls++))!='\0'){
         ls_index++;
         if(ch==' '||ch=='\t') continue;
-        else if(ch=='\n'){
-nextline:
+        else if(ch=='\n'||ch==13){
             LineNo++;
             ls_index=0;
         }
@@ -262,7 +261,7 @@ nextline:
                 free(buf);
                 return NULL;
             }
-            if(ch=='\n'){
+            if(ch=='\n'||ch==13){
                 LineNo++;
                 ls_index=0;
                 ls++;
@@ -278,9 +277,9 @@ nextline:
               case '+':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("+", IsKey("+"), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -298,9 +297,9 @@ nextline:
               case '*':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("*", IsKey("*"), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -318,9 +317,9 @@ nextline:
               case '/':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("/", IsKey("/"), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -338,9 +337,9 @@ nextline:
               case '&':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("&", IsKey("&"), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -361,9 +360,9 @@ nextline:
               case '|':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("|", IsKey("|"), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -384,9 +383,9 @@ nextline:
               case '>':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen(">", IsKey(">"), tokenStart, ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -398,9 +397,9 @@ nextline:
                   case '>':
                     ch=*(ls++);
                     ls_index++;
-                    if(ch=='\n'||ch=='\0'){
+                    if(ch=='\n'||ch==13||ch=='\0'){
                         save(Gen(">>", IsKey(">>"), tokenStart, ls_index, LineNo));
-                        if(ch=='\n')
+                        if(ch=='\n'||ch==13)
                           LineNo++;
                         ls_index=0;
                         break;
@@ -424,9 +423,9 @@ nextline:
               case '<':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("<", IsKey("<"), tokenStart, ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -438,9 +437,9 @@ nextline:
                   case '<':
                     ch=*(ls++);
                     ls_index++;
-                    if(ch=='\n'||ch=='\0'){
+                    if(ch=='\n'||ch==13||ch=='\0'){
                         save(Gen("<<", IsKey("<<"), tokenStart, ls_index, LineNo));
-                        if(ch=='\n')
+                        if(ch=='\n'||ch==13)
                           LineNo++;
                         ls_index=0;
                         break;
@@ -464,9 +463,9 @@ nextline:
               case '%':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("%", IsKey("*"), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -484,8 +483,8 @@ nextline:
               case '-':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
-                    if(ch=='\n')
+                if(ch=='\n'||ch==13||ch=='\0'){
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -503,9 +502,9 @@ nextline:
               case '!':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("!", IsKey("!"), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
@@ -633,7 +632,7 @@ nextline:
                           case '6': case '7': case '8': case '9':
                             chr=toInt(ch);
                             ch=*(ls++);
-                            if(ch=='\0'||ch=='\n'){
+                            if(ch=='\0'||ch=='\n'||ch==13){
                                 ls_index--;
                                 if(ch=='\0'){
                                     content=getLine(DefLS, LineNo);
@@ -648,7 +647,7 @@ nextline:
                                     free(STR_BUF);
                                     return NULL;
                                 }
-                                if(ch=='\n'){
+                                if(ch=='\n'||ch==13){
                                     if(STR_BUF_len<STR_BUF_MemMax)
                                       STR_BUF[STR_BUF_len++]=chr;
                                     else{
@@ -667,7 +666,7 @@ nextline:
                                 chr=toInt(ch)+chr*10;
                                 ch=*(ls++);
                                 ls_index++;
-                                if(ch=='\0'||ch=='\n'){
+                                if(ch=='\0'||ch=='\n'||ch==13){
                                     ls_index--;
                                     if(ch=='\0'){
                                         content=getLine(DefLS, LineNo);
@@ -682,7 +681,7 @@ nextline:
                                         free(STR_BUF);
                                         return NULL;
                                     }
-                                    if(ch=='\n'){
+                                    if(ch=='\n'||ch==13){
                                         if(STR_BUF_len<STR_BUF_MemMax)
                                           STR_BUF[STR_BUF_len++]=chr;
                                         else{
@@ -805,9 +804,9 @@ breakStr:
                     chr=toInt(ch);
                     ch=*(ls++);
                     ls_index++;
-                    if(ch=='\0'||ch=='\n'){
+                    if(ch=='\0'||ch=='\n'||ch==13){
                         save(Gen(toStr(chr), IsKey("\\"), tokenStart, --ls_index, LineNo));
-                        if(ch=='\n'){
+                        if(ch=='\n'||ch==13){
                             LineNo++;
                             ls_index=0;
                         }
@@ -820,9 +819,9 @@ breakStr:
                         chr=toInt(ch)+chr*10;
                         ch=*(ls++);
                         ls_index++;
-                        if(ch=='\0'||ch=='\n'){
+                        if(ch=='\0'||ch=='\n'||ch==13){
                             save(Gen(toStr(chr), IsKey("\\"), tokenStart, --ls_index, LineNo));
-                            if(ch=='\n'){
+                            if(ch=='\n'||ch==13){
                                 LineNo++;
                                 ls_index=0;
                             }
@@ -856,16 +855,20 @@ breakStr:
               case '#':
                 //save(Gen("#", IsKey("#"), tokenStart, ls_index, LineNo));
                 while((ch=*ls++)!='\0'){
-                    if(ch=='\n') goto nextline;
+                    if(ch=='\n'||ch==13){
+                        LineNo++;
+                        ls_index=0;
+                        break;
+                    }
                     ls_index++;
                 }
                 break;
               case '=':
                 ch=*(ls++);
                 ls_index++;
-                if(ch=='\n'||ch=='\0'){
+                if(ch=='\n'||ch==13||ch=='\0'){
                     save(Gen("=", IsKey("="), tokenStart, --ls_index, LineNo));
-                    if(ch=='\n')
+                    if(ch=='\n'||ch==13)
                       LineNo++;
                     ls_index=0;
                     break;
