@@ -35,24 +35,23 @@ uint64_t TrashCount=0;
                                 Trash[TrashCount++]=V[nowmem++];\
                             }
 
-void InitParser(){
+extern void InitParser(){
     Trash=(L_Token*)malloc(sizeof(L_Token)*1);
     TrashCount=0;
 }
 
-void CleanTrash(){
+extern void CleanTrash(){
     for(int i=0;i<TrashCount;i++){
         free(Trash[i].token);
     }
     free(Trash);
 }
 
-TokenList NumCompleter(L_Token* old, uint64_t len){
+extern TokenList NumCompleter(L_Token* old, uint64_t len){
     L_Token* new=(L_Token*)malloc(sizeof(L_Token)*TK_DEFAULT);
     uint64_t nowmem=0;
     uint64_t maxmem=TK_DEFAULT;
     char* str_tmp;
-    int int_tmp;
     uint64_t count=0;
     int id;
     while(count<len){

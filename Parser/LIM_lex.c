@@ -26,7 +26,7 @@ static char* const keys[LT_MAX]={
     "'", "\""
 };
 
-int IsKey(char* key){
+extern int IsKey(char* key){
     for(int i=0;i<LT_MAX;i++){
         if(strcmp(key,tokens[i].token)==0){
             return i;
@@ -35,23 +35,23 @@ int IsKey(char* key){
     return -1;
 }
 
-int IsLet(char c){
+extern int IsLet(char c){
     return (c<='z'&&c>='a')||(c<='Z'&&c>='A');
 }
 
-int IsNum(char c){
+extern int IsNum(char c){
     return c>='0'&&c<='9';
 }
 
-int IsBLet(char c){
+extern int IsBLet(char c){
     return c>='A'&&c<='Z';
 }
 
-int Lower(char c){
+extern int Lower(char c){
     return c+32;
 }
 
-int FullNum(char* c){
+extern int FullNum(char* c){
     int CH;
     while((CH=(*c++))!='\0'){
         if(!IsNum(CH)){
@@ -61,18 +61,18 @@ int FullNum(char* c){
     return true;
 }
 
-char* toStr(char c){
+extern char* toStr(char c){
     char *s=(char*)malloc(sizeof(char)*2);
     s[0]=c;
     s[1]='\0';
     return s;
 }
 
-int toInt(char c){
+extern int toInt(char c){
     return c-48;
 }
 
-int IsSigned(char* c){
+extern int IsSigned(char* c){
     int CH,FoundPoint=0,FoundSigN=0;
     if(!FullNum(c)) return false;
     while((CH=*(c++))!='\0'){
@@ -95,7 +95,7 @@ int IsSigned(char* c){
     return FoundSigN!=0?true:false;
 }
 
-char* getLine(char* str, uint64_t lineno){
+extern char* getLine(char* str, uint64_t lineno){
     char* result=(char*)malloc(sizeof(char)*256);
     size_t maxmem=256;
     uint64_t nowmem=0;
@@ -122,7 +122,7 @@ char* getLine(char* str, uint64_t lineno){
     return result;
 }
 
-char* GenPosTip(uint64_t From, uint64_t To){
+extern char* GenPosTip(uint64_t From, uint64_t To){
     uint64_t pos=0;
     char* result=(char*)malloc(sizeof(char)*256);
     uint64_t nowmem=0;
@@ -148,7 +148,7 @@ char* GenPosTip(uint64_t From, uint64_t To){
     return result;
 }
 
-void initialize(){
+extern void initialize(){
     char* key={0};
     int temp_i;
     for(int i=0;i<LT_MAX-2;i++){
@@ -167,7 +167,7 @@ void initialize(){
     Cache=(L_Token*)malloc(sizeof(L_Token)*CacheMax);
 }
 
-int save(L_Token ls){
+extern int save(L_Token ls){
     if(TokenNum>=nowmaxmem){
         L_Token *TNew=(L_Token*)malloc(sizeof(L_Token)*(nowmaxmem=nowmaxmem+TK_MALLOC));
         if(TNew==NULL){
@@ -188,7 +188,7 @@ int save(L_Token ls){
     return 0;
 }
 
-L_Token Gen(char* buf, int id, uint64_t From, uint64_t To, uint64_t Line){
+extern L_Token Gen(char* buf, int id, uint64_t From, uint64_t To, uint64_t Line){
     free(RES.token);
     RES.token=(char*)malloc(strlen(buf)*sizeof(char));
     strcpy(RES.token, buf);
@@ -205,7 +205,7 @@ L_Token Gen(char* buf, int id, uint64_t From, uint64_t To, uint64_t Line){
     return RES;
 }
 
-L_Token* getToken(char* ls){
+extern L_Token* getToken(char* ls){
     uint64_t ls_index=0, tokenStart=0;
     char *buf=(char*)malloc(sizeof(char)*BUF_MAX);
     int BufMaxMem=BUF_MAX;
@@ -903,7 +903,7 @@ breakStr:
     return Tokens;
 }
 
-void FreeMem(){
+extern void FreeMem(){
     for(int i=0;i<LT_MAX-2;i++){
         free(tokens[i].token);
     }
@@ -919,7 +919,7 @@ void FreeMem(){
     nowmaxmem=TK_DEFAULT;
 }
 
-int getLen(){
+extern int getLen(){
     return TokenNum;
 }
 
